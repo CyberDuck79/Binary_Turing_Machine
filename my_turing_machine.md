@@ -51,13 +51,33 @@ les tableaux de char serait des registres ?
 start big endian
 states	3
 state	read	write	move	jump
-1		0		1		1		2
-		1		0		1		3
+1		0		1		0		2
+		1		0		0		1
 2		0		(stop)
 		1		(stop)
-3		0		1		1		2
-		1		0		1		3
 
+
+## sub 1 to bytes
+00010011 -> if start 1 replace by zero
+00010010
+00100100 ->  write 1 to all 0 and write 0 to 1
+00100011
+
+start big endian
+states	3
+state	read	write	move	jump
+1		0		1		0		1
+		1		0		0		2
+2		0		(stop)
+		1		(stop)
+
+#### particularité de l'implementation
+#### TODO
+- faire en sorte de gérer la sortie de l'index de la memoire
+- prendre plusieurs espace memoires avec un index pour chaque
+
+
+# Pour plus tard
 ## mult
 	a		b		c
 	6	*	5	=	30

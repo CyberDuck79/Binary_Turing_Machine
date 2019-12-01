@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/28 19:27:19 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/01 11:21:13 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/01 16:10:13 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ int				main(int ac, char **av)
 	int			fd;
 	char		*input;
 	t_machine	*machine;
+	t_state		*ini;
 
 	if (ac != 3)
 	{
@@ -86,20 +87,17 @@ int				main(int ac, char **av)
 		write(1, "read error\n", 11);
 		return (0);
 	}
-	if (!(machine = machine_ini(&input)))
+	if (!check_tape(av[2]) || !(machine = machine_ini(&input)))
 	{
 		write(1, "input error\n", 12);
 		return (0);
 	}
-	if (!check_tape(av[2]))
-	{
-		free(machine);
-		write(1, "input error\n", 12);
-		return (0);
-	}
-	machine->tape = (t_bytes)atoi(av[2]);
-	print_tape(machine->tape);
+	ini = machine->current_state;
+	print_tape((machine->tape = (t_bytes)atoi(av[2])));
 	if (!(machine->execute(machine)))
 		write(1, "machine error\n", 15);
+	free(ini);
+	free(machine);
+	system("leaks a.out");
 	return (0);
 }

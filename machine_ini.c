@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/01 11:14:56 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/01 11:21:19 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/01 16:06:12 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ t_machine			*machine_ini(char **str)
 		return (NULL);
 	}
 	machine->current_state = initial_state;
-	machine->read_index = 128;
+	machine->read_index = 1;
 	machine->execute = execute;
 	return (machine);
 }

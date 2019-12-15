@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/28 19:27:19 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/01 16:10:13 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/16 00:50:07 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ t_error			execute(t_machine *this)
 		this->read_index >>= 1;
 	this->current_state = state->new_states[r_bit];
 	print_tape(this->tape);
-	return (this->execute(this));
+	return (execute(this));
 }
 
 static char		*read_all(int fd)
@@ -73,7 +73,7 @@ int				main(int ac, char **av)
 {
 	int			fd;
 	char		*input;
-	t_machine	*machine;
+	t_machine	machine;
 	t_state		*ini;
 
 	if (ac != 3)
@@ -82,22 +82,17 @@ int				main(int ac, char **av)
 		return (0);
 	}
 	fd = open(av[1], O_RDONLY);
-	if (!(input = read_all(fd)))
-	{
-		write(1, "read error\n", 11);
-		return (0);
-	}
-	if (!check_tape(av[2]) || !(machine = machine_ini(&input)))
+	if (!(input = read_all(fd)) || !check_tape(av[2])
+	|| machine_ini(&input, &machine) == ERROR)
 	{
 		write(1, "input error\n", 12);
 		return (0);
 	}
-	ini = machine->current_state;
-	print_tape((machine->tape = (t_bytes)atoi(av[2])));
-	if (!(machine->execute(machine)))
+	ini = machine.current_state;
+	print_tape((machine.tape = (t_bytes)atoi(av[2])));
+	if (!(execute(&machine)))
 		write(1, "machine error\n", 15);
 	free(ini);
-	free(machine);
 	system("leaks a.out");
 	return (0);
 }

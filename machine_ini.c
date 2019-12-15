@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/01 11:14:56 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/01 16:06:12 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/16 00:45:56 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,31 +71,22 @@ static t_error		trans_ini(char **str, size_t nb_states, t_state *states)
 	return (trans_ini(str, nb_states, states));
 }
 
-t_machine			*machine_ini(char **str)
+t_error			machine_ini(char **str, t_machine *machine)
 {
-	t_machine		*machine = malloc(sizeof(t_machine));
 	t_state			*initial_state;
 
 	if (!machine)
-		return(NULL);
+		return(ERROR);
 	if ((machine->states_nb = atoi(*str)) < 1)
-	{
-		free(machine);
-		return (NULL);
-	}
+		return (ERROR);
 	if (!(initial_state = calloc(machine->states_nb, sizeof(t_state))))
-	{
-		free(machine);
-		return (NULL);
-	}
+		return (ERROR);
 	if (trans_ini(str, machine->states_nb, initial_state) == ERROR)
 	{
 		free(initial_state);
-		free(machine);
-		return (NULL);
+		return (ERROR);
 	}
 	machine->current_state = initial_state;
 	machine->read_index = 1;
-	machine->execute = execute;
-	return (machine);
+	return (COMPILED);
 }

@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/28 18:27:28 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/01 11:21:10 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/16 00:45:44 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,8 @@ typedef struct		s_machine
 	t_state			*current_state;
 	t_bytes			read_index;
 	t_bytes			tape;
-	t_error			(*execute)(struct s_machine *this);
 }					t_machine;
 
-t_machine			*machine_ini(char **str);
-t_error				execute(t_machine *this);
+t_error				machine_ini(char **str, t_machine *machine);
 
 #endif

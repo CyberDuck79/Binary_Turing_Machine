@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/01 11:14:56 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/16 00:45:56 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/20 20:58:02 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 static int			next_token(char **str, char c)
 {
 	while (**str && **str != c)
-		*str += 1;
+		(*str)++;
 	if (!**str)
 		return (0);
-	*str += 1;
+	(*str)++;
 	return (1);
 }
 

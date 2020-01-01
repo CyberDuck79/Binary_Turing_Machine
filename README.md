@@ -10,3 +10,14 @@ direction : 0 left, 1 right
 reading starts right.  
 An error occur if there no state to go after a transition.  
 An error occur if the the read head comes out of memory.  
+## USAGE :
+Compilation : launch make command.  
+first arg : tansitions table file  
+second arg : number < 255
+exemple :  
+./turing_machine increment.turing 23  
+00010111  
+00010110  
+00010100  
+00010000  
+00011000  

@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/28 19:27:19 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/16 00:50:07 by fhenrion         ###   ########.fr       */
+/*   Updated: 2020/01/01 11:42:36 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,21 +26,27 @@ t_error			execute(t_machine *this)
 	t_bit		r_bit;
 	t_state		*state;
 
-	state = this->current_state;
-	r_bit = (this->tape & this->read_index ? 1 : 0);
-	if (state->w_bit[r_bit] == 1)
-		this->tape |= this->read_index;
-	else if (state->w_bit[r_bit] == 0)
-		this->tape &= ~this->read_index;
-	else if (state->w_bit[r_bit] == end)
-		return (STOP);
-	if (!state->move[r_bit])
-		this->read_index <<= 1;
-	else
-		this->read_index >>= 1;
-	this->current_state = state->new_states[r_bit];
-	print_tape(this->tape);
-	return (execute(this));
+	while (1)
+	{
+		state = this->current_state;
+		r_bit = (this->tape & this->read_index ? 1 : 0);
+		if (state->w_bit[r_bit] == 1)
+			this->tape |= this->read_index;
+		else if (state->w_bit[r_bit] == 0)
+			this->tape &= ~this->read_index;
+		else if (state->w_bit[r_bit] == end)
+			break;
+		if (!state->move[r_bit])
+			this->read_index <<= 1;
+		else
+			this->read_index >>= 1;
+		if (!this->read_index)
+			return (ERROR);
+		if (!(this->current_state = state->new_states[r_bit]))
+			return (NO_ACTION);
+		print_tape(this->tape);
+	}
+	return (STOP);
 }
 
 static char		*read_all(int fd)
@@ -93,6 +99,6 @@ int				main(int ac, char **av)
 	if (!(execute(&machine)))
 		write(1, "machine error\n", 15);
 	free(ini);
-	system("leaks a.out");
+	//system("leaks a.out");
 	return (0);
 }

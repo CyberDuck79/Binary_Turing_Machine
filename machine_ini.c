@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/01 11:14:56 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/16 00:45:56 by fhenrion         ###   ########.fr       */
+/*   Updated: 2020/01/01 11:19:54 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,31 +44,28 @@ static t_bit		binary_conv(char **str)
 
 static t_error		trans_ini(char **str, size_t nb_states, t_state *states)
 {
-	size_t			c_state;
-	t_bit			r_bit;
-	t_bit			w_bit;
-	t_direction		dir;
-	size_t			n_state;
+	t_trans	t;
 
-	if (!next_token(str, '\n'))
-		return (COMPILED);
-	c_state = (atoi(*str) - 1);
-	if (c_state < 0 || c_state >= nb_states || !next_token(str, ':'))
-		return (ERROR);
-	r_bit = binary_conv(str);
-	if (r_bit == invalid || r_bit == end || !next_token(str, ':'))
-		return (ERROR);
-	if ((w_bit = binary_conv(str)) == invalid || !next_token(str, ':'))
-		return (ERROR);
-	states[c_state].w_bit[r_bit] = w_bit;
-	if ((dir = dir_conv(str)) == none || !next_token(str, ':'))
-		return (ERROR);
-	states[c_state].move[r_bit] = dir;
-	n_state = (atoi(*str) - 1);
-	if (n_state < 0 || n_state >= nb_states)
-		return (ERROR);
-	states[c_state].new_states[r_bit] = states + n_state;
-	return (trans_ini(str, nb_states, states));
+	while (next_token(str, '\n'))
+	{
+		t.c_state = (atoi(*str) - 1);
+		if (t.c_state >= nb_states || !next_token(str, ':'))
+			return (ERROR);
+		t.r_bit = binary_conv(str);
+		if (t.r_bit == invalid || t.r_bit == end || !next_token(str, ':'))
+			return (ERROR);
+		if ((t.w_bit = binary_conv(str)) == invalid || !next_token(str, ':'))
+			return (ERROR);
+		states[t.c_state].w_bit[t.r_bit] = t.w_bit;
+		if ((t.dir = dir_conv(str)) == none || !next_token(str, ':'))
+			return (ERROR);
+		states[t.c_state].move[t.r_bit] = t.dir;
+		t.n_state = (atoi(*str) - 1);
+		if (t.n_state >= nb_states)
+			return (ERROR);
+		states[t.c_state].new_states[t.r_bit] = states + t.n_state;
+	}
+	return (COMPILED);
 }
 
 t_error			machine_ini(char **str, t_machine *machine)

@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/01 11:14:56 by fhenrion          #+#    #+#             */
-/*   Updated: 2020/01/06 22:18:03 by fhenrion         ###   ########.fr       */
+/*   Updated: 2020/01/06 22:21:42 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ static t_error		transitions_ini(char **str, size_t nb_states, t_state *states)
 		if ((trans.w_bit = binary_conv(str)) == invalid || !next_token(str, ':'))
 			return (ERROR);
 		states[trans.c_state].w_bit[trans.r_bit] = trans.w_bit;
-		if ((trans.dir = dir_conv(str)) == none || !next_token(str, ':'))
+		if ((trans.dir = direction_conv(str)) == none || !next_token(str, ':'))
 			return (ERROR);
 		states[trans.c_state].move[trans.r_bit] = trans.dir;
 		trans.n_state = (atoi(*str) - 1);

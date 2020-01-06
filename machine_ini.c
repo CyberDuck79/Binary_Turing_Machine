@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/01 11:14:56 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/20 20:58:02 by fhenrion         ###   ########.fr       */
+/*   Updated: 2020/01/06 22:18:03 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static int			next_token(char **str, char c)
 	return (1);
 }
 
-static t_direction	dir_conv(char **str)
+static t_direction	direction_conv(char **str)
 {
 	if (**str == '0')
 		return (left);
@@ -42,33 +42,30 @@ static t_bit		binary_conv(char **str)
 	return (invalid);
 }
 
-static t_error		trans_ini(char **str, size_t nb_states, t_state *states)
+static t_error		transitions_ini(char **str, size_t nb_states, t_state *states)
 {
-	size_t			c_state;
-	t_bit			r_bit;
-	t_bit			w_bit;
-	t_direction		dir;
-	size_t			n_state;
+	t_trans	trans;
 
-	if (!next_token(str, '\n'))
-		return (COMPILED);
-	c_state = (atoi(*str) - 1);
-	if (c_state < 0 || c_state >= nb_states || !next_token(str, ':'))
-		return (ERROR);
-	r_bit = binary_conv(str);
-	if (r_bit == invalid || r_bit == end || !next_token(str, ':'))
-		return (ERROR);
-	if ((w_bit = binary_conv(str)) == invalid || !next_token(str, ':'))
-		return (ERROR);
-	states[c_state].w_bit[r_bit] = w_bit;
-	if ((dir = dir_conv(str)) == none || !next_token(str, ':'))
-		return (ERROR);
-	states[c_state].move[r_bit] = dir;
-	n_state = (atoi(*str) - 1);
-	if (n_state < 0 || n_state >= nb_states)
-		return (ERROR);
-	states[c_state].new_states[r_bit] = states + n_state;
-	return (trans_ini(str, nb_states, states));
+	while (next_token(str, '\n'))
+	{
+		trans.c_state = (atoi(*str) - 1);
+		if (trans.c_state >= nb_states || !next_token(str, ':'))
+			return (ERROR);
+		trans.r_bit = binary_conv(str);
+		if (trans.r_bit == invalid || trans.r_bit == end || !next_token(str, ':'))
+			return (ERROR);
+		if ((trans.w_bit = binary_conv(str)) == invalid || !next_token(str, ':'))
+			return (ERROR);
+		states[trans.c_state].w_bit[trans.r_bit] = trans.w_bit;
+		if ((trans.dir = dir_conv(str)) == none || !next_token(str, ':'))
+			return (ERROR);
+		states[trans.c_state].move[trans.r_bit] = trans.dir;
+		trans.n_state = (atoi(*str) - 1);
+		if (trans.n_state >= nb_states)
+			return (ERROR);
+		states[trans.c_state].new_states[trans.r_bit] = states + trans.n_state;
+	}
+	return (COMPILED);
 }
 
 t_error			machine_ini(char **str, t_machine *machine)
@@ -81,7 +78,7 @@ t_error			machine_ini(char **str, t_machine *machine)
 		return (ERROR);
 	if (!(initial_state = calloc(machine->states_nb, sizeof(t_state))))
 		return (ERROR);
-	if (trans_ini(str, machine->states_nb, initial_state) == ERROR)
+	if (transitions_ini(str, machine->states_nb, initial_state) == ERROR)
 	{
 		free(initial_state);
 		return (ERROR);

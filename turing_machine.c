@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/28 19:27:19 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/16 00:50:07 by fhenrion         ###   ########.fr       */
+/*   Updated: 2020/01/06 22:13:33 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,34 +26,41 @@ t_error			execute(t_machine *this)
 	t_bit		r_bit;
 	t_state		*state;
 
-	state = this->current_state;
-	r_bit = (this->tape & this->read_index ? 1 : 0);
-	if (state->w_bit[r_bit] == 1)
-		this->tape |= this->read_index;
-	else if (state->w_bit[r_bit] == 0)
-		this->tape &= ~this->read_index;
-	else if (state->w_bit[r_bit] == end)
-		return (STOP);
-	if (!state->move[r_bit])
-		this->read_index <<= 1;
-	else
-		this->read_index >>= 1;
-	this->current_state = state->new_states[r_bit];
-	print_tape(this->tape);
-	return (execute(this));
+	while (1)
+	{
+		state = this->current_state;
+		r_bit = (this->tape & this->read_index ? 1 : 0);
+		if (state->w_bit[r_bit] == 1)
+			this->tape |= this->read_index;
+		else if (state->w_bit[r_bit] == 0)
+			this->tape &= ~this->read_index;
+		else if (state->w_bit[r_bit] == end)
+			break;
+		if (!state->move[r_bit])
+			this->read_index <<= 1;
+		else
+			this->read_index >>= 1;
+		if (!this->read_index)
+			return (ERROR);
+		if (!(this->current_state = state->new_states[r_bit]))
+			return (NO_ACTION);
+		print_tape(this->tape);
+	}
+	return (STOP);
 }
 
-static char		*read_all(int fd)
+static char		*read_file(int fd, size_t offset)
 {
-	char		buf[8193];
+	char		buf[BUFFER_SIZE];
 	char		*new;
 	size_t		count;
 
 	if (read(fd, buf, 0) < 0)
 		return (NULL);
-	count = read(fd, buf, 8192);
-	buf[count] = '\0';
-	new = strdup(buf);
+	if (!(count = read(fd, buf, BUFFER_SIZE)))
+		return (new = malloc(offset));
+	new = read_file(fd, offset + count);
+	strncpy(new + offset, buf, BUFFER_SIZE);
 	return (new);
 }
 
@@ -82,7 +89,7 @@ int				main(int ac, char **av)
 		return (0);
 	}
 	fd = open(av[1], O_RDONLY);
-	if (!(input = read_all(fd)) || !check_tape(av[2])
+	if (!(input = read_file(fd, 0)) || !check_tape(av[2])
 	|| machine_ini(&input, &machine) == ERROR)
 	{
 		write(1, "input error\n", 12);
@@ -93,6 +100,6 @@ int				main(int ac, char **av)
 	if (!(execute(&machine)))
 		write(1, "machine error\n", 15);
 	free(ini);
-	system("leaks a.out");
+	//system("leaks a.out");
 	return (0);
 }

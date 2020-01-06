@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/28 18:27:28 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/16 00:45:44 by fhenrion         ###   ########.fr       */
+/*   Updated: 2020/01/06 22:13:31 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 # include <stdlib.h>
 # include <stdio.h>
 # include <string.h>
+
+# define BUFFER_SIZE 4096
 
 typedef unsigned char	t_bytes;
 
@@ -38,11 +40,20 @@ typedef enum		e_direction
 
 typedef enum		e_bit
 {
-	false = 0,
-	true = 1,
-	end = 2,
+	false,
+	true,
+	end,
 	invalid = -1
 }					t_bit;
+
+typedef struct		s_trans
+{
+	size_t			c_state;
+	t_bit			r_bit;
+	t_bit			w_bit;
+	t_direction		dir;
+	size_t			n_state;
+}					t_trans;
 
 typedef struct		s_state
 {
